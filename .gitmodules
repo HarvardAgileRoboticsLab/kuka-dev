@@ -1,3 +1,6 @@
 [submodule "drake"]
 	path = drake
 	url = git@github.com:HarvardAgileRoboticsLab/drake.git
+[submodule "util/signal-scope"]
+	path = util/signal-scope
+	url = git@github.com:openhumanoids/signal-scope.git
