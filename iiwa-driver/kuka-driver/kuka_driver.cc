@@ -38,6 +38,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     lcm_status_.joint_position_measured.resize(num_joints_);
     lcm_status_.joint_position_commanded.resize(num_joints_);
     lcm_status_.joint_position_ipo.resize(num_joints_);
+    lcm_status_.joint_velocity_estimated.resize(num_joints_);
     lcm_status_.joint_torque_measured.resize(num_joints_);
     lcm_status_.joint_torque_commanded.resize(num_joints_);
     lcm_status_.joint_torque_external.resize(num_joints_);
