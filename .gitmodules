@@ -4,3 +4,6 @@
 [submodule "util/signal-scope"]
 	path = util/signal-scope
 	url = git@github.com:openhumanoids/signal-scope.git
+[submodule "iiwa-driver/externals/cmake"]
+	path = iiwa-driver/externals/cmake
+	url = https://github.com/RobotLocomotion/cmake.git
