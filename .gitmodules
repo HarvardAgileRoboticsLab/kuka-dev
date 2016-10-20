@@ -1,0 +1,3 @@
+[submodule "drake"]
+	path = drake
+	url = git@github.com:HarvardAgileRoboticsLab/drake.git
