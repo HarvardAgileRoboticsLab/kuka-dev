@@ -23,6 +23,7 @@ namespace {
 
 const char* lcm_status_channel = "IIWA_STATUS";
 const char* lcm_command_channel = "IIWA_COMMAND";
+const float alpha = 0.5;
 
 double ToRadians(double degrees) {
   return degrees * M_PI / 180.;
@@ -160,6 +161,17 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     lcm_command_ = *command;
   }
 
+  void UpdateJointVelocityEstimate() {
+    double delta_pos, dt;
+    for (int i=0; i<num_joints_; i++) {
+      delta_pos = lcm_status_.joint_position_measured[i] - joint_position_previous_[i];
+      dt = double(lcm_status_.timestamp - timestamp_previous_)/1e3;
+      joint_velocity_estimate_[i] = (1-alpha) * joint_velocity_estimate_[i] + alpha* delta_pos/dt;
+    } 
+    std::memcpy(lcm_status_.joint_velocity_estimated.data(),
+                joint_velocity_estimate_.data(), num_joints_ * sizeof(double));
+  }
+
   void PublishStateUpdate() {
     const KUKA::FRI::LBRState& state = robotState();
 
@@ -183,6 +195,23 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
                 state.getCommandedTorque(), num_joints_ * sizeof(double));
     std::memcpy(lcm_status_.joint_torque_external.data(),
                 state.getExternalTorque(), num_joints_ * sizeof(double));
+
+    if (joint_position_previous_.empty()) {
+      // init velocity estimator
+      joint_position_previous_.resize(num_joints_);
+      for (int i=0; i<num_joints_; i++) {
+        joint_velocity_estimate_.push_back(0);
+      }
+    }
+    else {
+      UpdateJointVelocityEstimate();
+    }
+    std::memcpy(joint_position_previous_.data(),
+                state.getMeasuredJointPosition(), num_joints_ * sizeof(double));
+    timestamp_previous_ = lcm_status_.timestamp;
+
+
+
     lcm_.publish(lcm_status_channel, &lcm_status_);
     // Also poll for new messages.
     lcm_.handleTimeout(0);
@@ -194,6 +223,9 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
   lcmt_iiwa_status lcm_status_;
   lcmt_iiwa_command lcm_command_;
   std::vector<double> joint_limits_;
+  std::vector<double> joint_velocity_estimate_;
+  std::vector<double> joint_position_previous_;
+  long timestamp_previous_;
 };
 
 int do_main(int argc, const char* argv[]) {
