@@ -10,7 +10,15 @@ RMDIR          = rm -rf
 
 RM					= rm -f
 
-CP					= cp -uf
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S), Darwin)
+		# Mac OSX
+		CP					= rsync -u
+else
+		# linux
+		CP					= cp -uf
+endif
 
 CC             = gcc
 
