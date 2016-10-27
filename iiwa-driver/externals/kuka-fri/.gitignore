@@ -1,0 +1,17 @@
+
+# re-include the build directory
+!build
+
+# binaries and libraries
+bin/
+lib/
+
+# all of the object files
+example/*/obj/
+src/*/obj/
+
+# the executables that were put in the source folders
+example/LBRClientTemplate/LBRClientTemplate
+example/LBRJointSineOverlay/LBRJointSineOverlay
+example/LBRTorqueSineOverlay/LBRTorqueSineOverlay
+example/LBRWrenchSineOverlay/LBRWrenchSineOverlay
