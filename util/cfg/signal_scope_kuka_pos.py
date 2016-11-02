@@ -1,4 +1,7 @@
-findLCMTypes(os.path.expanduser('~/code/kuka-dev/drake/build/drake/lcmtypes/drake'))
+# findLCMTypes(os.path.expanduser('~/code/kuka-dev/drake/build/drake/lcmtypes/drake'))
+lcm_dir = os.path.abspath(os.path.join(__file__,'..','..','..',
+                    'drake','build','drake','lcmtypes','drake'))
+findLCMTypes(lcm_dir)
 
 def positions_measured_s(idx):
 	# convert time from nano seconds to milliseconds
