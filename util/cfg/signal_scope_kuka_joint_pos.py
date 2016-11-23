@@ -10,11 +10,6 @@ def desired_position_command_s(idx):
 	f = lambda msg: (int(msg.timestamp*1000), msg.coefficients[idx])
 	return f
 
-#addPlot(timeWindow=15, yLimits=[-3.14, 3.14])
-# addPlot()
-# addSignals('IIWA_PARAM', msg.utime, msg.desired_position_command_s, range(7))
-# addSignals('IIWA_STATUS', msg.utime, msg.positions_measured_s, range(7))
-
 addPlot()
 addSignalFunction('IIWA_PARAM', desired_position_command_s(0))
 addSignalFunction('IIWA_STATUS', positions_measured_s(0))
