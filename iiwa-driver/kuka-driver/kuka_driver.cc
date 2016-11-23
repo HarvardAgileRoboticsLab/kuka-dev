@@ -69,8 +69,8 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     KUKA::FRI::LBRClient::onStateChange(oldState, newState);
 
     const KUKA::FRI::LBRState& state = robotState();
-    const uint64_t time = state.getTimestampSec() * 1e3 +
-        state.getTimestampNanoSec() / 1e6;
+    const uint64_t time = state.getTimestampSec() * 1e6 +
+        state.getTimestampNanoSec() / 1e3;
     std::cerr << "onStateChange ( " << time << "): old " << oldState
               << " new " << newState << std::endl;
 
@@ -165,7 +165,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     double delta_pos, dt;
     for (int i=0; i<num_joints_; i++) {
       delta_pos = lcm_status_.joint_position_measured[i] - joint_position_previous_[i];
-      dt = double(lcm_status_.utime - timestamp_previous_)/1e3;
+      dt = double(lcm_status_.utime - utime_previous_)/1e6;
       joint_velocity_estimate_[i] = (1-alpha) * joint_velocity_estimate_[i] + alpha* delta_pos/dt;
     } 
     std::memcpy(lcm_status_.joint_velocity_estimated.data(),
@@ -175,8 +175,8 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
   void PublishStateUpdate() {
     const KUKA::FRI::LBRState& state = robotState();
 
-    lcm_status_.utime = state.getTimestampSec() * 1e3 +
-        state.getTimestampNanoSec() / 1e6;
+    lcm_status_.utime = state.getTimestampSec() * 1e6 +
+        state.getTimestampNanoSec() / 1e3;
     std::memcpy(lcm_status_.joint_position_measured.data(),
                 state.getMeasuredJointPosition(), num_joints_ * sizeof(double));
     std::memcpy(lcm_status_.joint_position_commanded.data(),
@@ -208,7 +208,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     }
     std::memcpy(joint_position_previous_.data(),
                 state.getMeasuredJointPosition(), num_joints_ * sizeof(double));
-    timestamp_previous_ = lcm_status_.utime;
+    utime_previous_ = lcm_status_.utime;
 
 
 
@@ -225,7 +225,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
   std::vector<double> joint_limits_;
   std::vector<double> joint_velocity_estimate_;
   std::vector<double> joint_position_previous_;
-  long timestamp_previous_;
+  long utime_previous_;
 };
 
 int do_main(int argc, const char* argv[]) {
