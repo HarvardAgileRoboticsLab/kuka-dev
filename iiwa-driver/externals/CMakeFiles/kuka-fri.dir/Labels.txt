@@ -1,0 +1,13 @@
+# Target labels
+ kuka-fri
+# Source files and their labels
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/CMakeFiles/kuka-fri
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/CMakeFiles/kuka-fri.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/CMakeFiles/kuka-fri-complete.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-install.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-mkdir.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-download.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-update.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-patch.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-configure.rule
+/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-build.rule

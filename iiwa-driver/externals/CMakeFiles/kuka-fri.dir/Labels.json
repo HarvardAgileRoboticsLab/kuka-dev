@@ -1,0 +1,51 @@
+
+{
+	"sources" : 
+	[
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/CMakeFiles/kuka-fri"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/CMakeFiles/kuka-fri.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/CMakeFiles/kuka-fri-complete.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-install.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-mkdir.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-download.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-update.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-patch.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-configure.rule"
+		},
+		
+		{
+			"file" : "/home/yezhao/code/kuka-dev/iiwa-driver/externals/kuka-fri-prefix/src/kuka-fri-stamp/kuka-fri-build.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : [ "kuka-fri" ],
+		"name" : "kuka-fri"
+	}
+}
