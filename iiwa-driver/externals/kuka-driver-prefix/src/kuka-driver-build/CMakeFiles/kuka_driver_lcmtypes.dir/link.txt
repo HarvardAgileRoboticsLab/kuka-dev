@@ -1,2 +1,0 @@
-/usr/bin/ar qc lib/libkuka_driver_lcmtypes.a  CMakeFiles/kuka_driver_lcmtypes.dir/lcmgen/lcmtypes/drake_lcmt_iiwa_command.c.o CMakeFiles/kuka_driver_lcmtypes.dir/lcmgen/lcmtypes/drake_lcmt_iiwa_status.c.o
-/usr/bin/ranlib lib/libkuka_driver_lcmtypes.a
