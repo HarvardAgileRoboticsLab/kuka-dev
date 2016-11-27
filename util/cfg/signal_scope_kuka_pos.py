@@ -18,6 +18,6 @@ addPlot()
 addSignalFunctions('IIWA_STATUS', positions_measured, range(7))
 
 addPlot()
-# add all seven position measurements
+# add all seven velocity estimated
 addSignalFunctions('IIWA_STATUS', velocities_estimated, range(7))
 
