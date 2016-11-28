@@ -113,8 +113,8 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     double pos[num_joints_] = { 0., 0., 0., 0., 0., 0., 0.};
     if (lcm_command_.utime == -1) {
       // No command received, just command the current position.
-      memcpy(pos, lcm_status_.joint_position_measured.data(),
-             num_joints_ * sizeof(double));
+      // memcpy(pos, lcm_status_.joint_position_measured.data(),
+      //        num_joints_ * sizeof(double));
     } else {
       assert(lcm_command_.num_joints == num_joints_);
       memcpy(pos, lcm_command_.joint_position.data(),
