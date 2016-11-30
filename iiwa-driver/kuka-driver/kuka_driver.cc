@@ -111,10 +111,9 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     }
 
     double pos[num_joints_] = { 0., 0., 0., 0., 0., 0., 0.};
-    if (lcm_command_.utime == -1) {
-      // No command received, just command the current position.
-      memcpy(pos, lcm_status_.joint_position_measured.data(),
-             num_joints_ * sizeof(double));
+    if (lcm_command_.utime == -1 || robotState().getClientCommandMode() == KUKA::FRI::TORQUE) {
+  		 memcpy(pos, lcm_status_.joint_position_measured.data(),
+               num_joints_ * sizeof(double));
     } else {
       assert(lcm_command_.num_joints == num_joints_);
       memcpy(pos, lcm_command_.joint_position.data(),
@@ -140,8 +139,15 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
       robotCommand().setTorque(torque);
     } else {
       if (lcm_command_.utime != -1 && lcm_command_.num_torques != 0) {
-        throw std::runtime_error(
-            "Torque values specified when not in torque command mode.");
+ 
+        // just ignore it and send zeros
+        double torque[num_joints_] = { 0., 0., 0., 0., 0., 0., 0.};
+        memcpy(torque, lcm_command_.joint_torque.data(),
+               num_joints_ * sizeof(double));
+      
+
+        // throw std::runtime_error(
+        //     "Torque values specified when not in torque command mode.");
       }
     }
   }
