@@ -1,0 +1,55 @@
+package drake;
+//Status of the robotiq hand
+struct lcmt_robotiq_input {
+
+//Initialization status(Echos rACT bit):
+//0x0 Gripper reset
+//0x1 Gripper activation
+byte gACT;
+
+//Action status(Echos rGTO bit):
+//0x0 Stopped(or performing activation/auto release)
+//0x1 Go to position request
+byte gGTO;
+
+//Gripper status(Returns current status and motion of gripper):
+//0x00 Gripper is reset,or auto release.
+//0x01 activation in progress
+//0x02 not used
+//0x03 Activation is completed
+byte gSTA;
+
+//Object detection status(ignored if gGTO == 0):
+//0x00 Fingers in motion to requested position and no object detected
+//0x01 Fingers have stopped due to contact while opening before requested position
+//0x02 Fingers have stopped due to contact while closing before requested position
+//0x03 Fingers are at requested position,No object detected or object has been lost/dropped
+byte gOBJ;
+
+//Fault status
+//0x00 No Fault (Blue LED)
+//0x05 Action delayed,activation(reactivation) must be completed prior to renwed action (BLUE LED)
+//0x07 The activation bit must be set prior to action (BLUE LED)
+//0x08 Maximum operating temperature exceeded,wait for cool-down (RED LED)
+//0x0A Under minimum operating voltage (RED/BLUE BLINKING LED)
+//0x0B Automatic release in progress (RED/BLUE BLINKING LED)
+//0x0C Internal processor fault (RED/BLUE BLINKING LED)
+//0x0D Activation fault,verify no interference has occured (RED/BLUE BLINKING LED)
+//0x0E Overcurrent triggered (RED/BLUE BLINKING LED)
+//0x0F Automatic release completed (RED/BLUE BLINKING LED)
+byte gFLT;
+
+//Echo requested position
+//0x00 Full opening
+//0xFF Full closing
+byte gPR;
+
+//Echo gripper position from encoders
+//0x00 Fully openined
+//0xFF Fully closed
+byte gPO;
+
+//Instantaneous motor drive current:
+//Between 0x00 and 0xFF : Current is approx 10*gCU mA
+byte gCU;
+}
