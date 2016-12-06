@@ -44,7 +44,7 @@ This serves as an example for publishing messages on the 'CModelRobotOutput' top
 #import roslib; roslib.load_manifest('robotiq_c_model_control')
 #import rospy
 #from robotiq_c_model_control.msg import _CModel_robot_output  as outputMsg
-from drake import lcmt_robotiq_output as outputMsg
+from robo_lcm import lcmt_robotiq_output as outputMsg
 from time import sleep
 import lcm,os,sys
 
@@ -107,7 +107,7 @@ def genCommand(char, command):
 
 def askForCommand(command):
     """Ask the user for a command to send to the gripper."""    
-
+  
     currentCommand  = 'Simple C-Model Controller\n-----\nCurrent command:'
     currentCommand += '  rACT = '  + str(command.rACT)
     currentCommand += ', rGTO = '  + str(command.rGTO)

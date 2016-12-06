@@ -52,8 +52,8 @@ import os, sys
 import lcm
 from time import sleep
 import select
-from drake import lcmt_robotiq_input  as inputMsg
-from drake import lcmt_robotiq_output as outputMsg
+#from drake import lcmt_robotiq_input  as inputMsg #READD THISS
+#from drake import lcmt_robotiq_output as outputMsg #READD THIS
 #from robotiq_c_model_control.msg import _CModel_robot_input  as inputMsg
 #from robotiq_c_model_control.msg import _CModel_robot_output as outputMsg
 
