@@ -1,0 +1,22 @@
+package drake;
+//Functionality of robotiq hand
+struct lcmt_robotiq_output {
+
+//Activate gripper: Gripper only works when this is 0x1 and will complete an auto-callibration after
+byte rACT;
+
+//Activates GoTo for the specified position
+byte rGTO;
+
+//Automatic release function:Can overide all other commands
+byte rATR;
+
+//Sets the target position for gripper fingers:0x00(0) is open,0xFF(255) is closed
+byte rPR;
+
+//Gripper closing or opening speed:0x00(0) is min speed,0xFF(255) is max speed
+byte rSP;
+
+//Gripper final gripping force:0x00(0) is min force,0xFF(255) is max force
+byte rFR;
+}
