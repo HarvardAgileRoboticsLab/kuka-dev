@@ -111,10 +111,11 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     }
 
     double pos[num_joints_] = { 0., 0., 0., 0., 0., 0., 0.};
-    if (lcm_command_.utime == -1 || robotState().getClientCommandMode() == KUKA::FRI::TORQUE) {
-  		 memcpy(pos, lcm_status_.joint_position_measured.data(),
+    if (robotState().getClientCommandMode() == KUKA::FRI::TORQUE){
+       memcpy(pos, lcm_status_.joint_position_measured.data(),
                num_joints_ * sizeof(double));
-    } else {
+    }
+    else if (lcm_command_.utime != -1){
       assert(lcm_command_.num_joints == num_joints_);
       memcpy(pos, lcm_command_.joint_position.data(),
              num_joints_ * sizeof(double));
