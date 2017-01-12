@@ -16,6 +16,10 @@
 #include "lcmtypes/drake/lcmt_iiwa_command.hpp"
 #include "lcmtypes/drake/lcmt_iiwa_status.hpp"
 
+#include "filters.h"
+#define CUT_OFF_FRE_VEL 20
+#define SERVO_RATE 0.005
+
 namespace drake {
 namespace examples {
 namespace kuka_iiwa_arm {
@@ -60,6 +64,9 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
 
     lcm_.subscribe(lcm_command_channel,
                    &KukaLCMClient::HandleCommandMessage, this);
+    for(int i = 0; i < num_joints_; i++){
+      lp_filter_vel_[i] = new digital_lp_filter(CUT_OFF_FRE_VEL, SERVO_RATE);
+    }
   }
 
   ~KukaLCMClient() {}
@@ -175,6 +182,13 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
       dt = double(lcm_status_.utime - utime_previous_)/1e6;
       joint_velocity_estimate_[i] = (1-alpha) * joint_velocity_estimate_[i] + alpha* delta_pos/dt;
     } 
+
+    // digital low pass filter for joint velocity (cut-off frequency 20 Hz) 
+    for(int i=0; i<num_joints_; i++){
+      lp_filter_vel_[i] -> input(joint_velocity_estimate_[i]);
+      joint_velocity_estimate_[i] = lp_filter_vel_[i]->output();
+    }
+
     std::memcpy(lcm_status_.joint_velocity_estimated.data(),
                 joint_velocity_estimate_.data(), num_joints_ * sizeof(double));
   }
@@ -213,12 +227,12 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     else {
       UpdateJointVelocityEstimate();
     }
+
     std::memcpy(joint_position_previous_.data(),
                 state.getMeasuredJointPosition(), num_joints_ * sizeof(double));
+
     utime_previous_ = lcm_status_.utime;
-
-
-
+    
     lcm_.publish(lcm_status_channel, &lcm_status_);
     // Also poll for new messages.
     lcm_.handleTimeout(0);
@@ -233,6 +247,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
   std::vector<double> joint_velocity_estimate_;
   std::vector<double> joint_position_previous_;
   long utime_previous_;
+  filter* lp_filter_vel_[num_joints_];
 };
 
 int do_main(int argc, const char* argv[]) {
