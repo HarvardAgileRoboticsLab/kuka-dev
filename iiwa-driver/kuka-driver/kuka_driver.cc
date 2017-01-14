@@ -17,7 +17,8 @@
 #include "lcmtypes/drake/lcmt_iiwa_status.hpp"
 
 #include "filters.h"
-#define CUT_OFF_FRE_VEL 20
+#define CUT_OFF_FRE_VEL 40
+#define CUT_OFF_FRE_TORQUE 40
 #define SERVO_RATE 0.005
 
 namespace drake {
@@ -64,8 +65,11 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
 
     lcm_.subscribe(lcm_command_channel,
                    &KukaLCMClient::HandleCommandMessage, this);
+
+    // low pass filter for joint velocity and torque
     for(int i = 0; i < num_joints_; i++){
       lp_filter_vel_[i] = new digital_lp_filter(CUT_OFF_FRE_VEL, SERVO_RATE);
+      lp_filter_torque_[i] = new digital_lp_filter(CUT_OFF_FRE_TORQUE, SERVO_RATE);
     }
   }
 
@@ -183,7 +187,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
       joint_velocity_estimate_[i] = (1-alpha) * joint_velocity_estimate_[i] + alpha* delta_pos/dt;
     } 
 
-    // digital low pass filter for joint velocity (cut-off frequency 20 Hz) 
+    // digital low pass filter for joint velocity (cut-off frequency 40 Hz) 
     for(int i=0; i<num_joints_; i++){
       lp_filter_vel_[i] -> input(joint_velocity_estimate_[i]);
       joint_velocity_estimate_[i] = lp_filter_vel_[i]->output();
@@ -214,6 +218,12 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
                 state.getMeasuredTorque(), num_joints_ * sizeof(double));
     std::memcpy(lcm_status_.joint_torque_commanded.data(),
                 state.getCommandedTorque(), num_joints_ * sizeof(double));
+
+    // digital low pass filter for joint torque (cut-off frequency 40 Hz) 
+    for(int i=0; i<num_joints_; i++){
+      lp_filter_torque_[i] -> input(lcm_status_.joint_torque_measured[i]);
+      lcm_status_.joint_torque_measured[i] = lp_filter_torque_[i]->output();
+    }
     std::memcpy(lcm_status_.joint_torque_external.data(),
                 state.getExternalTorque(), num_joints_ * sizeof(double));
 
@@ -248,6 +258,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
   std::vector<double> joint_position_previous_;
   long utime_previous_;
   filter* lp_filter_vel_[num_joints_];
+  filter* lp_filter_torque_[num_joints_];
 };
 
 int do_main(int argc, const char* argv[]) {
