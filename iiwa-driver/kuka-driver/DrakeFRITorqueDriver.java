@@ -83,7 +83,7 @@ public class DrakeFRITorqueDriver extends RoboticsAPIApplication
     {
         // configure and start FRI session
         FRIConfiguration friConfiguration = FRIConfiguration.createRemoteConfiguration(_lbr, _clientName);
-        friConfiguration.setSendPeriodMilliSec(5);
+        friConfiguration.setSendPeriodMilliSec(1);
         while (true) {
           doFRISession(friConfiguration);
         }

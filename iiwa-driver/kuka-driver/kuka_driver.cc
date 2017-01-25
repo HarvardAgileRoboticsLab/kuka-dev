@@ -19,7 +19,7 @@
 #include "filters.h"
 #define CUT_OFF_FRE_VEL 40
 #define CUT_OFF_FRE_TORQUE 40
-#define SERVO_RATE 0.005
+#define SERVO_RATE 0.001
 
 namespace drake {
 namespace examples {
