@@ -28,7 +28,7 @@ namespace {
 
 const char* lcm_status_channel = "IIWA_STATUS";
 const char* lcm_command_channel = "IIWA_COMMAND";
-const float alpha = 0.6;
+const float alpha = 1;
 
 double ToRadians(double degrees) {
   return degrees * M_PI / 180.;
