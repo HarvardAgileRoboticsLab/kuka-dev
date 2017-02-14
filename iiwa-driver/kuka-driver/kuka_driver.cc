@@ -18,6 +18,7 @@
 
 #include "filters.h"
 #define CUT_OFF_FRE_VEL 40
+#define CUT_OFF_FRE_ACCEL 40
 #define CUT_OFF_FRE_TORQUE 40
 #define SERVO_RATE 0.001
 
@@ -28,7 +29,6 @@ namespace {
 
 const char* lcm_status_channel = "IIWA_STATUS";
 const char* lcm_command_channel = "IIWA_COMMAND";
-const float alpha = 1;
 
 double ToRadians(double degrees) {
   return degrees * M_PI / 180.;
@@ -45,6 +45,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     lcm_status_.joint_position_commanded.resize(num_joints_);
     lcm_status_.joint_position_ipo.resize(num_joints_);
     lcm_status_.joint_velocity_estimated.resize(num_joints_);
+    lcm_status_.joint_acceleration_estimated.resize(num_joints_);
     lcm_status_.joint_torque_measured.resize(num_joints_);
     lcm_status_.joint_torque_commanded.resize(num_joints_);
     lcm_status_.joint_torque_external.resize(num_joints_);
@@ -69,6 +70,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     // low pass filter for joint velocity and torque
     for(int i = 0; i < num_joints_; i++){
       lp_filter_vel_[i] = new digital_lp_filter(CUT_OFF_FRE_VEL, SERVO_RATE);
+      lp_filter_accel_[i] = new digital_lp_filter(CUT_OFF_FRE_ACCEL, SERVO_RATE);
       lp_filter_torque_[i] = new digital_lp_filter(CUT_OFF_FRE_TORQUE, SERVO_RATE);
     }
   }
@@ -184,7 +186,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     for (int i=0; i<num_joints_; i++) {
       delta_pos = lcm_status_.joint_position_measured[i] - joint_position_previous_[i];
       dt = double(lcm_status_.utime - utime_previous_)/1e6;
-      joint_velocity_estimate_[i] = (1-alpha) * joint_velocity_estimate_[i] + alpha* delta_pos/dt;
+      joint_velocity_estimate_[i] = delta_pos/dt;
     } 
 
     // digital low pass filter for joint velocity (cut-off frequency 40 Hz) 
@@ -195,6 +197,24 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
 
     std::memcpy(lcm_status_.joint_velocity_estimated.data(),
                 joint_velocity_estimate_.data(), num_joints_ * sizeof(double));
+  }
+
+  void UpdateJointAccelerationEstimate() {
+    double delta_vel, dt;
+    for (int i=0; i<num_joints_; i++) {
+      delta_vel = lcm_status_.joint_velocity_estimated[i] - joint_velocity_previous_[i];
+      dt = double(lcm_status_.utime - utime_previous_)/1e6;
+      joint_acceleration_estimate_[i] = delta_vel/dt;
+    }
+
+    // digital low pass filter for joint velocity (cut-off frequency 40 Hz) 
+    for(int i=0; i<num_joints_; i++){
+      lp_filter_accel_[i] -> input(joint_acceleration_estimate_[i]);
+      joint_acceleration_estimate_[i] = lp_filter_accel_[i]->output();
+    }
+
+    std::memcpy(lcm_status_.joint_acceleration_estimated.data(),
+                joint_acceleration_estimate_.data(), num_joints_ * sizeof(double));
   }
 
   void PublishStateUpdate() {
@@ -241,6 +261,20 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     std::memcpy(joint_position_previous_.data(),
                 state.getMeasuredJointPosition(), num_joints_ * sizeof(double));
 
+    if (joint_velocity_previous_.empty()) {
+      // init acceleration estimator
+      joint_velocity_previous_.resize(num_joints_);
+      for (int i=0; i<num_joints_; i++) {
+        joint_acceleration_estimate_.push_back(0);
+      }
+    }
+    else {
+      UpdateJointAccelerationEstimate();
+    }
+
+    std::memcpy(joint_velocity_previous_.data(),
+                joint_velocity_estimate_.data(), num_joints_ * sizeof(double));
+
     utime_previous_ = lcm_status_.utime;
     
     lcm_.publish(lcm_status_channel, &lcm_status_);
@@ -255,9 +289,12 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
   lcmt_iiwa_command lcm_command_;
   std::vector<double> joint_limits_;
   std::vector<double> joint_velocity_estimate_;
+  std::vector<double> joint_acceleration_estimate_;
   std::vector<double> joint_position_previous_;
+  std::vector<double> joint_velocity_previous_;
   long utime_previous_;
   filter* lp_filter_vel_[num_joints_];
+  filter* lp_filter_accel_[num_joints_];
   filter* lp_filter_torque_[num_joints_];
 };
 
