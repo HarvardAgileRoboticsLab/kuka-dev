@@ -84,6 +84,16 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
     const KUKA::FRI::LBRState& state = robotState();
     const uint64_t time = state.getTimestampSec() * 1e6 +
         state.getTimestampNanoSec() / 1e3;
+
+    if (newState == KUKA::FRI::COMMANDING_ACTIVE) {
+      joint_position_when_command_entered_.resize(num_joints_, 0.);
+      std::memcpy(joint_position_when_command_entered_.data(),
+                  state.getMeasuredJointPosition(),
+                  num_joints_ * sizeof(double));
+      lcm_command_.utime = -1;
+    }
+
+
     std::cerr << "onStateChange ( " << time << "): old " << oldState
               << " new " << newState << std::endl;
 
@@ -132,6 +142,10 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
       assert(lcm_command_.num_joints == num_joints_);
       memcpy(pos, lcm_command_.joint_position.data(),
              num_joints_ * sizeof(double));
+    } else { // Not torque and utime == -1
+	assert(joint_position_when_command_entered_.size() == num_joints_);
+	memcpy(pos, joint_position_when_command_entered_.data(),
+               num_joints_ * sizeof(double));
     }
     ApplyJointLimits(pos);
     robotCommand().setJointPosition(pos);
@@ -296,6 +310,7 @@ class KukaLCMClient : public KUKA::FRI::LBRClient {
   filter* lp_filter_vel_[num_joints_];
   filter* lp_filter_accel_[num_joints_];
   filter* lp_filter_torque_[num_joints_];
+  std::vector<double> joint_position_when_command_entered_;
 };
 
 int do_main(int argc, const char* argv[]) {
